@@ -80,8 +80,10 @@ func (db *DB) initSchema() error {
 			UNIQUE(project_id, name)
 		)`,
 		`CREATE TABLE IF NOT EXISTS metadata (
-			path TEXT PRIMARY KEY,
+			id TEXT PRIMARY KEY,
+			path TEXT NOT NULL UNIQUE,
 			value TEXT NOT NULL,
+			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 		)`,
 	}

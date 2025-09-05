@@ -33,8 +33,10 @@ const (
 
 // Metadata represents key-value metadata storage
 type Metadata struct {
+	ID        string    `json:"id" db:"id"`
 	Path      string    `json:"path" db:"path"`
 	Value     string    `json:"value" db:"value"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 
@@ -77,6 +79,18 @@ type InstanceListOptions struct {
 	ProjectID string
 	Name      string
 	Status    string
+}
+
+// CreateMetadataRequest represents the request to create metadata
+type CreateMetadataRequest struct {
+	Path  string `json:"path"`
+	Value string `json:"value"`
+}
+
+// UpdateMetadataRequest represents the request to update metadata
+type UpdateMetadataRequest struct {
+	Path  *string `json:"path,omitempty"`
+	Value *string `json:"value,omitempty"`
 }
 
 // MetadataListOptions represents query options for listing metadata

@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nicolas/dirtcloud/domain"
+	"github.com/jamesnicolas/dirtcloud/domain"
 )
 
 // Client provides a Go SDK for the DirtCloud API
@@ -274,33 +274,40 @@ func (c *Client) DeleteInstance(ctx context.Context, id string) error {
 
 // Metadata operations
 
-// SetMetadata creates or updates metadata
-func (c *Client) SetMetadata(ctx context.Context, path, value string) (*domain.Metadata, error) {
+// CreateMetadata creates new metadata
+func (c *Client) CreateMetadata(ctx context.Context, req domain.CreateMetadataRequest) (*domain.Metadata, error) {
 	var metadata domain.Metadata
-	err := c.do(ctx, "PUT", "/metadata/"+strings.TrimPrefix(path, "/"), value, &metadata)
+	err := c.do(ctx, "POST", "/metadata", req, &metadata)
 	return &metadata, err
 }
 
-// GetMetadata retrieves metadata value by path
-func (c *Client) GetMetadata(ctx context.Context, path string) (string, error) {
-	var value string
-	err := c.do(ctx, "GET", "/metadata/"+strings.TrimPrefix(path, "/"), nil, &value)
-	return value, err
+// GetMetadata retrieves metadata by ID
+func (c *Client) GetMetadata(ctx context.Context, id string) (*domain.Metadata, error) {
+	var metadata domain.Metadata
+	err := c.do(ctx, "GET", "/metadata/"+id, nil, &metadata)
+	return &metadata, err
 }
 
-// ListMetadata lists metadata paths with optional prefix filtering
-func (c *Client) ListMetadata(ctx context.Context, opts domain.MetadataListOptions) ([]string, error) {
+// UpdateMetadata updates existing metadata
+func (c *Client) UpdateMetadata(ctx context.Context, id string, req domain.UpdateMetadataRequest) (*domain.Metadata, error) {
+	var metadata domain.Metadata
+	err := c.do(ctx, "PATCH", "/metadata/"+id, req, &metadata)
+	return &metadata, err
+}
+
+// ListMetadata lists metadata with optional prefix filtering
+func (c *Client) ListMetadata(ctx context.Context, opts domain.MetadataListOptions) ([]*domain.Metadata, error) {
 	path := "/metadata"
 	if opts.Prefix != "" {
 		path += "?prefix=" + url.QueryEscape(opts.Prefix)
 	}
 	
-	var paths []string
-	err := c.do(ctx, "GET", path, nil, &paths)
-	return paths, err
+	var metadata []*domain.Metadata
+	err := c.do(ctx, "GET", path, nil, &metadata)
+	return metadata, err
 }
 
-// DeleteMetadata deletes metadata by path
-func (c *Client) DeleteMetadata(ctx context.Context, path string) error {
-	return c.do(ctx, "DELETE", "/metadata/"+strings.TrimPrefix(path, "/"), nil, nil)
+// DeleteMetadata deletes metadata by ID
+func (c *Client) DeleteMetadata(ctx context.Context, id string) error {
+	return c.do(ctx, "DELETE", "/metadata/"+id, nil, nil)
 }

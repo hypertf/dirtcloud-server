@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/nicolas/dirtcloud/web"
+	"github.com/jamesnicolas/dirtcloud/web"
 )
 
 // SetupRouter creates and configures the HTTP router
@@ -61,13 +61,12 @@ func SetupRouter(handler *Handler) *mux.Router {
 	api.HandleFunc("/instances/{id}", handler.DeleteInstance).Methods("DELETE")
 
 	// Metadata routes
-	// Note: We need to handle both individual metadata operations and listing
-	// The order matters here - more specific routes should come first
+	api.HandleFunc("/metadata", handler.CreateMetadata).Methods("POST")
 	api.HandleFunc("/metadata", handler.ListMetadata).Methods("GET").Queries("prefix", "")
 	api.HandleFunc("/metadata", handler.ListMetadata).Methods("GET")
-	api.HandleFunc("/metadata/{path:.*}", handler.SetMetadata).Methods("PUT")
-	api.HandleFunc("/metadata/{path:.*}", handler.GetMetadata).Methods("GET")
-	api.HandleFunc("/metadata/{path:.*}", handler.DeleteMetadata).Methods("DELETE")
+	api.HandleFunc("/metadata/{id}", handler.GetMetadata).Methods("GET")
+	api.HandleFunc("/metadata/{id}", handler.UpdateMetadata).Methods("PATCH")
+	api.HandleFunc("/metadata/{id}", handler.DeleteMetadata).Methods("DELETE")
 
 	// Add CORS middleware for development
 	router.Use(corsMiddleware)

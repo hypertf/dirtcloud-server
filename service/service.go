@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 	"regexp"
 
-	"github.com/nicolas/dirtcloud/domain"
+	"github.com/jamesnicolas/dirtcloud/domain"
 )
 
 // Service provides business logic for DirtCloud operations
@@ -36,10 +36,11 @@ type InstanceRepository interface {
 
 // MetadataRepository defines the interface for metadata data operations
 type MetadataRepository interface {
-	Set(path, value string) (*domain.Metadata, error)
-	Get(path string) (*domain.Metadata, error)
-	List(opts domain.MetadataListOptions) ([]string, error)
-	Delete(path string) error
+	Create(req domain.CreateMetadataRequest) (*domain.Metadata, error)
+	GetByID(id string) (*domain.Metadata, error)
+	Update(id string, req domain.UpdateMetadataRequest) (*domain.Metadata, error)
+	List(opts domain.MetadataListOptions) ([]*domain.Metadata, error)
+	Delete(id string) error
 }
 
 // NewService creates a new service instance
@@ -299,43 +300,43 @@ func (s *Service) DeleteInstance(id string) error {
 
 // Metadata operations
 
-// SetMetadata creates or updates metadata
-func (s *Service) SetMetadata(path, value string) (*domain.Metadata, error) {
-	if path == "" {
+// CreateMetadata creates new metadata
+func (s *Service) CreateMetadata(req domain.CreateMetadataRequest) (*domain.Metadata, error) {
+	if req.Path == "" {
 		return nil, domain.InvalidInputError("metadata path cannot be empty", nil)
 	}
 
-	return s.metadataRepo.Set(path, value)
+	return s.metadataRepo.Create(req)
 }
 
-// GetMetadata retrieves metadata by path
-func (s *Service) GetMetadata(path string) (*domain.Metadata, error) {
-	if path == "" {
-		return nil, domain.InvalidInputError("metadata path cannot be empty", nil)
+// GetMetadata retrieves metadata by ID
+func (s *Service) GetMetadata(id string) (*domain.Metadata, error) {
+	if id == "" {
+		return nil, domain.InvalidInputError("metadata ID cannot be empty", nil)
 	}
 
-	return s.metadataRepo.Get(path)
+	return s.metadataRepo.GetByID(id)
 }
 
-// ListMetadata lists metadata paths with optional prefix filtering
-func (s *Service) ListMetadata(opts domain.MetadataListOptions) ([]string, error) {
+// UpdateMetadata updates existing metadata
+func (s *Service) UpdateMetadata(id string, req domain.UpdateMetadataRequest) (*domain.Metadata, error) {
+	if id == "" {
+		return nil, domain.InvalidInputError("metadata ID cannot be empty", nil)
+	}
+
+	return s.metadataRepo.Update(id, req)
+}
+
+// ListMetadata lists metadata with optional prefix filtering
+func (s *Service) ListMetadata(opts domain.MetadataListOptions) ([]*domain.Metadata, error) {
 	return s.metadataRepo.List(opts)
 }
 
-// DeleteMetadata deletes metadata by path
-func (s *Service) DeleteMetadata(path string) error {
-	if path == "" {
-		return domain.InvalidInputError("metadata path cannot be empty", nil)
+// DeleteMetadata deletes metadata by ID
+func (s *Service) DeleteMetadata(id string) error {
+	if id == "" {
+		return domain.InvalidInputError("metadata ID cannot be empty", nil)
 	}
 
-	return s.metadataRepo.Delete(path)
-}
-
-// GetMetadataValue retrieves just the value from metadata
-func (s *Service) GetMetadataValue(path string) (string, error) {
-	metadata, err := s.GetMetadata(path)
-	if err != nil {
-		return "", err
-	}
-	return metadata.Value, nil
+	return s.metadataRepo.Delete(id)
 }

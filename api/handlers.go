@@ -2,14 +2,13 @@ package api
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/nicolas/dirtcloud/domain"
-	"github.com/nicolas/dirtcloud/service"
-	"github.com/nicolas/dirtcloud/service/chaos"
+	"github.com/jamesnicolas/dirtcloud/domain"
+	"github.com/jamesnicolas/dirtcloud/service"
+	"github.com/jamesnicolas/dirtcloud/service/chaos"
 )
 
 // Handler holds dependencies for HTTP handlers
@@ -368,8 +367,8 @@ func (h *Handler) DeleteInstance(w http.ResponseWriter, r *http.Request) {
 
 // Metadata handlers
 
-// SetMetadata handles PUT /v1/metadata/{path+}
-func (h *Handler) SetMetadata(w http.ResponseWriter, r *http.Request) {
+// CreateMetadata handles POST /v1/metadata
+func (h *Handler) CreateMetadata(w http.ResponseWriter, r *http.Request) {
 	if err := h.authenticate(r); err != nil {
 		h.writeError(w, err)
 		return
@@ -380,32 +379,22 @@ func (h *Handler) SetMetadata(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vars := mux.Vars(r)
-	path := vars["path"]
-
-	if path == "" {
-		h.writeError(w, domain.InvalidInputError("metadata path cannot be empty", nil))
+	var req domain.CreateMetadataRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.writeError(w, domain.InvalidInputError("invalid JSON", nil))
 		return
 	}
 
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		h.writeError(w, domain.InvalidInputError("failed to read request body", nil))
-		return
-	}
-
-	value := string(body)
-
-	metadata, err := h.service.SetMetadata(path, value)
+	metadata, err := h.service.CreateMetadata(req)
 	if err != nil {
 		h.writeError(w, err)
 		return
 	}
 
-	h.writeJSON(w, http.StatusOK, metadata)
+	h.writeJSON(w, http.StatusCreated, metadata)
 }
 
-// GetMetadata handles GET /v1/metadata/{path+}
+// GetMetadata handles GET /v1/metadata/{id}
 func (h *Handler) GetMetadata(w http.ResponseWriter, r *http.Request) {
 	if err := h.authenticate(r); err != nil {
 		h.writeError(w, err)
@@ -418,20 +407,15 @@ func (h *Handler) GetMetadata(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vars := mux.Vars(r)
-	path := vars["path"]
+	id := vars["id"]
 
-	if path == "" {
-		h.writeError(w, domain.InvalidInputError("metadata path cannot be empty", nil))
-		return
-	}
-
-	value, err := h.service.GetMetadataValue(path)
+	metadata, err := h.service.GetMetadata(id)
 	if err != nil {
 		h.writeError(w, err)
 		return
 	}
 
-	h.writeText(w, http.StatusOK, value)
+	h.writeJSON(w, http.StatusOK, metadata)
 }
 
 // ListMetadata handles GET /v1/metadata with prefix query parameter
@@ -450,16 +434,46 @@ func (h *Handler) ListMetadata(w http.ResponseWriter, r *http.Request) {
 		Prefix: r.URL.Query().Get("prefix"),
 	}
 
-	paths, err := h.service.ListMetadata(opts)
+	metadata, err := h.service.ListMetadata(opts)
 	if err != nil {
 		h.writeError(w, err)
 		return
 	}
 
-	h.writeJSON(w, http.StatusOK, paths)
+	h.writeJSON(w, http.StatusOK, metadata)
 }
 
-// DeleteMetadata handles DELETE /v1/metadata/{path+}
+// UpdateMetadata handles PATCH /v1/metadata/{id}
+func (h *Handler) UpdateMetadata(w http.ResponseWriter, r *http.Request) {
+	if err := h.authenticate(r); err != nil {
+		h.writeError(w, err)
+		return
+	}
+
+	if err := h.chaosService.ApplyMetadataChaos(r.Context(), r); err != nil {
+		h.writeError(w, err)
+		return
+	}
+
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	var req domain.UpdateMetadataRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.writeError(w, domain.InvalidInputError("invalid JSON", nil))
+		return
+	}
+
+	metadata, err := h.service.UpdateMetadata(id, req)
+	if err != nil {
+		h.writeError(w, err)
+		return
+	}
+
+	h.writeJSON(w, http.StatusOK, metadata)
+}
+
+// DeleteMetadata handles DELETE /v1/metadata/{id}
 func (h *Handler) DeleteMetadata(w http.ResponseWriter, r *http.Request) {
 	if err := h.authenticate(r); err != nil {
 		h.writeError(w, err)
@@ -472,14 +486,9 @@ func (h *Handler) DeleteMetadata(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vars := mux.Vars(r)
-	path := vars["path"]
+	id := vars["id"]
 
-	if path == "" {
-		h.writeError(w, domain.InvalidInputError("metadata path cannot be empty", nil))
-		return
-	}
-
-	err := h.service.DeleteMetadata(path)
+	err := h.service.DeleteMetadata(id)
 	if err != nil {
 		h.writeError(w, err)
 		return
