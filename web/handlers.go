@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/nicolas/dirtcloud/domain"
-	"github.com/nicolas/dirtcloud/service"
+	"github.com/hypertf/dirtcloud-server/domain"
+	"github.com/hypertf/dirtcloud-server/service"
 )
 
 type Handler struct {

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nicolas/dirtcloud/domain"
+	"github.com/hypertf/dirtcloud-server/domain"
 )
 
 // InstanceRepository handles instance data operations

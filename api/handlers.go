@@ -6,9 +6,9 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jamesnicolas/dirtcloud/domain"
-	"github.com/jamesnicolas/dirtcloud/service"
-	"github.com/jamesnicolas/dirtcloud/service/chaos"
+	"github.com/hypertf/dirtcloud-server/domain"
+	"github.com/hypertf/dirtcloud-server/service"
+	"github.com/hypertf/dirtcloud-server/service/chaos"
 )
 
 // Handler holds dependencies for HTTP handlers

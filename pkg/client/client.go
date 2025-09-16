@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jamesnicolas/dirtcloud/domain"
+	"github.com/hypertf/dirtcloud-server/domain"
 )
 
 // Client provides a Go SDK for the DirtCloud API

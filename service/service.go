@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 	"regexp"
 
-	"github.com/jamesnicolas/dirtcloud/domain"
+	"github.com/hypertf/dirtcloud-server/domain"
 )
 
 // Service provides business logic for DirtCloud operations

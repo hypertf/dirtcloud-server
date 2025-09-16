@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jamesnicolas/dirtcloud/domain"
+	"github.com/hypertf/dirtcloud-server/domain"
 )
 
 // MetadataRepository handles metadata data operations

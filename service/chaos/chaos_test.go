@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nicolas/dirtcloud/domain"
+	"github.com/hypertf/dirtcloud-server/domain"
 	"github.com/stretchr/testify/assert"
 )
 

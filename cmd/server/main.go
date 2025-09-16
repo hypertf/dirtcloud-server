@@ -9,10 +9,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/nicolas/dirtcloud/api"
-	"github.com/nicolas/dirtcloud/service"
-	"github.com/nicolas/dirtcloud/service/chaos"
-	"github.com/nicolas/dirtcloud/storage/sqlite"
+	"github.com/hypertf/dirtcloud-server/api"
+	"github.com/hypertf/dirtcloud-server/service"
+	"github.com/hypertf/dirtcloud-server/service/chaos"
+	"github.com/hypertf/dirtcloud-server/storage/sqlite"
 )
 
 func main() {

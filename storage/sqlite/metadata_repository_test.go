@@ -3,7 +3,7 @@ package sqlite
 import (
 	"testing"
 
-	"github.com/jamesnicolas/dirtcloud/domain"
+	"github.com/hypertf/dirtcloud-server/domain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

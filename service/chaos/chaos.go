@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nicolas/dirtcloud/domain"
+	"github.com/hypertf/dirtcloud-server/domain"
 )
 
 // Config holds chaos engineering configuration

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/jamesnicolas/dirtcloud/web"
+	"github.com/hypertf/dirtcloud-server/web"
 )
 
 // SetupRouter creates and configures the HTTP router
